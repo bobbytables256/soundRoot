@@ -1,0 +1,41 @@
+name : soundRoot
+version : 0.0.0.1
+synopsis : soundRoot
+description:
+   Haskell FLTKHS sound visualizer/editor 
+license : MIT
+license-file : LICENSE
+author : Brian Oborn
+build-type: Custom
+maintainer: linuxpunk@gmail.com
+homepage: https://github.com/staynalive/soundRoot
+category: UI,Graphics
+cabal-version: >=1.24
+source-repository head
+  type: git
+  location: https://github.com/staynalive/soundRoot
+
+Flag FastCompile
+   Description: Turn off optimizations for faster compilation
+   Manual: True
+   Default: False
+
+Executable soundRoot
+  Main-Is: soundRoot.hs
+  Hs-Source-Dirs: src/
+  Build-Depends:
+    base == 4.*,
+    fltkhs >= 0.5.4.3,
+    text >= 1.2.2.0
+  default-language: Haskell2010
+  ghc-Options: -Werror -threaded
+  if impl(ghc >= 7.10) && impl(ghc < 8.0) && flag(FastCompile)
+     ghc-Options: -fno-specialise -fmax-simplifier-iterations=0 -fsimplifier-phases=0
+  else
+     ghc-Options: -O2
+  if os(windows)
+   ghc-Options: -pgml g++ "-optl-Wl,--allow-multiple-definition" "-optl-Wl,--whole-archive" "-optl-Wl,-Bstatic" "-optl-Wl,-lfltkc" "-optl-Wl,-Bdynamic" "-optl-Wl,--no-whole-archive"
+  if os(darwin)
+   ghc-Options: "-optl-Wl,-lfltkc"
+  if !os(darwin) && !os(windows)
+   ghc-Options: -pgml g++ "-optl-Wl,--allow-multiple-definition" "-optl-Wl,--whole-archive" "-optl-Wl,-Bstatic" "-optl-Wl,-lfltkc" "-optl-Wl,-Bdynamic" "-optl-Wl,--no-whole-archive"
